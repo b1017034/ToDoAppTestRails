@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    tty: true
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /usr/src/app
+    ports:
+      - "3000:3000"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - ORG=${ORG}
+    command: bundle exec rails s -p 3001 -b '0.0.0.0'
+    ports:
+      - "3001:3001"
+    depends_on:
+      - database
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /app
+      - type: bind
+        source: ${HOME}/.ssh
+        target: /root/.ssh
+
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    tty: true
+    platform: linux/x86_64
+    ports:
+      - "3306:3306"
+    env_file:
+      - database/.env
+    volumes:
+      - type: volume
+        source: mysql_volume
+        target: /var/lib/mysql
+      - type: bind
+        source: ./database/init
+        target: /docker-entrypoint-initdb.d
+
+volumes:
+  mysql_volume:
+    name: mysql_volume
