@@ -1,0 +1,92 @@
+openapi: "3.0.3"
+
+info:
+    title: "Todo API"
+    description: "Test for Todo API"
+    version: "1.0.0"
+
+servers:
+    - url: "http://localhost:3001"
+      description: "local"
+
+tags:
+  - name: "todo"
+    description: "todo"
+
+paths:
+  "/todo":
+    get:
+      summary: "todoの全件取得"
+      tags: [ "todo" ]
+      responses:
+        "200":
+          description: "成功"
+    post:
+      summary: "todoの新規作成"
+      tags: [ "todo" ]
+      requestBody:
+        $ref: "#/components/requestBodies/todo"
+      responses:
+        "200":
+          description: "成功"
+      deprecated: false
+
+  "/todo/{todoId}":
+    parameters:
+      - $ref: "#/components/parameters/todoId"
+    get:
+      summary: "todoの取得"
+      tags: [ "todo" ]
+      responses:
+        "200":
+          description: "成功"
+      deprecated: false
+
+    put:
+      summary: "todoの更新"
+      tags: [ "todo" ]
+      requestBody:
+        $ref: "#/components/requestBodies/todo"
+      responses:
+        "200":
+          description: "成功"
+      deprecated: false
+
+    delete:
+      summary: "todoの削除"
+      tags: [ "todo" ]
+      responses:
+        "200":
+          description: "成功"
+      deprecated: false
+
+components:
+  parameters:
+    todoId:
+      name: todoId
+      in: path
+      required: true
+      schema: { type:string }
+      example: "1"
+
+  requestBodies:
+    todo:
+      description: A JSON object containing todo information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/todo"
+  schemas:
+    todo:
+      type: object
+      properties:
+        id: {type: number, example: 1 }
+        text: {type: string, example: "test" }
+        dueDateTime: {type: string, format: date-time, example: "2017-07-21T17:32:28Z" }
+        createdAt: {type: string, format: date-time, example: "2017-07-21T17:32:28Z" }
+        updatedAt: {type: string, format: date-time, example: "2017-07-21T17:32:28Z" }
+    todos:
+      type: array
+      items:
+        $ref: "#/components/schemas/todo"
